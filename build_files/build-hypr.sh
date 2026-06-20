@@ -17,9 +17,14 @@ if rpm -q code >/dev/null; then
 fi
 
 dnf5 -y copr enable "${HYPR_COPR_OWNER}/${HYPR_COPR_PROJECT}" "${HYPR_COPR_CHROOT}"
+dnf5 -y --no-gpgchecks \
+  --repofrompath "terra,https://repos.fyralabs.com/terra${VERSION_ID}" \
+  install terra-release
 
 dnf5 -y install \
   hyprland \
+  hyprland-guiutils \
+  hyprland-qt-support \
   xdg-desktop-portal-hyprland \
   xdg-desktop-portal-gtk \
   waybar \
@@ -40,6 +45,7 @@ dnf5 -y install \
   qt6-qtmultimedia \
   qt6-qtdeclarative \
   qt6-qtwayland \
+  noctalia-shell \
   git
 
 theme_tmp="$(mktemp -d)"

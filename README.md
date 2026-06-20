@@ -43,7 +43,9 @@ Use this image when Hyprland should be the primary daily-driver session while GN
 This variant keeps everything from `bluefin-gaming-dx` and additionally:
 
 - installs Hyprland
+- installs Hyprland GUI utilities and Qt support
 - installs `xdg-desktop-portal-hyprland`
+- installs Noctalia Shell from Terra
 - keeps GNOME installed and available from the login screen
 - replaces GDM as the enabled display manager with SDDM
 - installs the SDDM Astronaut theme
@@ -57,6 +59,8 @@ This variant keeps everything from `bluefin-gaming-dx` and additionally:
 Hyprland packages are resolved from the `craftidore/wayblueorg-hyprland` COPR because the Fedora 44 repositories enabled in the Bluefin base do not currently provide the `hyprland` package directly. This COPR is used only by the Hyprland image variant.
 
 As of June 20, 2026, upstream Hyprland's latest release is `v0.55.4`, and this COPR resolves `hyprland-git 0.55.4^3.git9556660-1.fc44` on Fedora 44. That keeps the image current rather than pinned to an old Hyprland release.
+
+Noctalia Shell is resolved from the Terra Fedora repository. The Hyprland image enables Terra only in the Hyprland variant and installs the packaged `noctalia-shell` RPM instead of building Noctalia from source during image composition.
 
 ## Gaming Packages
 
@@ -262,6 +266,8 @@ The Fedora 44 package names used by the GNOME image are intentionally plain RPM 
 The Hyprland image adds these Fedora/COPR package names:
 
 - `hyprland`, currently satisfied by the COPR's `hyprland-git` provider
+- `hyprland-guiutils`
+- `hyprland-qt-support`
 - `xdg-desktop-portal-hyprland`
 - `hyprpaper`
 - `hyprlock`
@@ -275,8 +281,9 @@ The Hyprland image adds these Fedora/COPR package names:
 - `qt6-qtdeclarative`
 - `qt6-qtwayland`
 - `lxpolkit`
+- `noctalia-shell`, from Terra
 
-If Fedora, RPM Fusion, Bluefin, or the Hyprland COPR changes a package name, the build fails at the `dnf5 install` step. The intended fix is to update the relevant build script and document the naming change here.
+If Fedora, RPM Fusion, Bluefin, Terra, or the Hyprland COPR changes a package name, the build fails at the `dnf5 install` step. The intended fix is to update the relevant build script and document the naming change here.
 
 ## SDDM Astronaut
 
@@ -296,31 +303,9 @@ Astronaut is configured as the default SDDM theme through `/etc/sddm.conf.d/10-b
 
 ## Noctalia
 
-Noctalia is not installed by this image today.
+`bluefin-gaming-hypr-dx` installs `noctalia-shell` from Terra during image composition.
 
-Reason: Noctalia currently builds from source, is in active early/alpha development, and does not have a clean Fedora RPM package source suitable for a stable bootable image. Blocking the OS image build on a fast-moving source build would make the image less reliable.
-
-Manual install path after rebasing to the Hyprland image:
-
-```bash
-git clone https://github.com/noctalia-dev/noctalia.git
-cd noctalia
-sudo dnf install meson gcc-c++ just \
-  wayland-devel wayland-protocols-devel \
-  libEGL-devel mesa-libGLES-devel \
-  freetype-devel fontconfig-devel \
-  cairo-devel pango-devel harfbuzz-devel \
-  libxkbcommon-devel glib2-devel \
-  sdbus-cpp-devel pipewire-devel \
-  pam-devel polkit-devel libcurl-devel libwebp-devel librsvg2-devel \
-  libqalculate-devel libxml2-devel \
-  jemalloc-devel
-just configure release "$HOME/.local"
-just build release
-just install release
-```
-
-This keeps Noctalia optional and prevents it from breaking the bootable image.
+The image intentionally consumes the Terra RPM rather than building Noctalia from source. That keeps the Hyprland image reproducible while still making Noctalia part of the bootable deployment.
 
 ## Multilib Consistency
 

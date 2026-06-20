@@ -2,6 +2,8 @@
 set -ouex pipefail
 
 required_packages=(
+  hyprland-guiutils
+  hyprland-qt-support
   xdg-desktop-portal-hyprland
   lxpolkit
   sddm
@@ -14,6 +16,7 @@ required_packages=(
   gamescope
   gamemode
   mangohud
+  noctalia-shell
   protontricks
 )
 
