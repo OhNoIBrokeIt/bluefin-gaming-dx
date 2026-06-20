@@ -1,0 +1,7 @@
+cosign.key
+cosign.pub
+output/
+*_build*/
+previous.manifest.json
+changelog.md
+output.env
