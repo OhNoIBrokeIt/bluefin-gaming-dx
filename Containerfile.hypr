@@ -1,0 +1,22 @@
+ARG BASE_IMAGE=ghcr.io/ohnoibrokeit/bluefin-gaming-dx:latest
+
+# Allow build scripts to be referenced without being copied into the final image.
+FROM scratch AS ctx
+COPY build_files /
+
+# Start from the GNOME gaming image so Steam, Gamescope, NVIDIA Open support,
+# HDR-capable base graphics components, and Bluefin DX tooling are preserved.
+FROM ${BASE_IMAGE}
+
+ARG SDDM_ASTRONAUT_REF=cd46736b4135a71700d2225d60eb8e85917585eb
+ENV SDDM_ASTRONAUT_REF="${SDDM_ASTRONAUT_REF}"
+
+# Apply Hyprland-only image customizations.
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/build-hypr.sh
+
+# Verify final image and bootc metadata.
+RUN bootc container lint

@@ -20,6 +20,17 @@ build target_image=image_name tag=default_tag:
       .
 
 [group("Build")]
+build-hypr target_image="bluefin-gaming-hypr-dx" tag=default_tag base_image="ghcr.io/ohnoibrokeit/bluefin-gaming-dx:latest":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    podman build \
+      --pull=newer \
+      --build-arg "BASE_IMAGE=${base_image}" \
+      --tag "${target_image}:${tag}" \
+      --file Containerfile.hypr \
+      .
+
+[group("Build")]
 lint:
     #!/usr/bin/env bash
     set -euo pipefail
