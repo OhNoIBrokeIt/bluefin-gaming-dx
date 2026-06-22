@@ -48,6 +48,18 @@ for path in "${required_paths[@]}"; do
   fi
 done
 
+unreadable_theme_dir="$(find /usr/share/sddm/themes/sddm-astronaut-theme -type d ! -perm -005 -print -quit)"
+if [[ -n "${unreadable_theme_dir}" ]]; then
+  echo "::error::SDDM Astronaut theme directory is not readable/traversable by SDDM: ${unreadable_theme_dir}" >&2
+  exit 1
+fi
+
+unreadable_theme_file="$(find /usr/share/sddm/themes/sddm-astronaut-theme -type f ! -perm -004 -print -quit)"
+if [[ -n "${unreadable_theme_file}" ]]; then
+  echo "::error::SDDM Astronaut theme file is not readable by SDDM: ${unreadable_theme_file}" >&2
+  exit 1
+fi
+
 if ! grep -q '^Current=sddm-astronaut-theme$' /etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf; then
   echo "::error::SDDM Astronaut is not configured as the default SDDM theme." >&2
   exit 1

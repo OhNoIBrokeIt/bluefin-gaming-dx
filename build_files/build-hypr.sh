@@ -58,6 +58,7 @@ rm -rf "${ASTRONAUT_THEME_DIR}"
 install -d "${ASTRONAUT_THEME_DIR}"
 cp -a "${theme_tmp}/." "${ASTRONAUT_THEME_DIR}/"
 rm -rf "${ASTRONAUT_THEME_DIR}/.git"
+chmod -R a+rX "${ASTRONAUT_THEME_DIR}"
 
 if [[ -d "${ASTRONAUT_THEME_DIR}/Fonts" ]]; then
   cp -a "${ASTRONAUT_THEME_DIR}/Fonts/." /usr/share/fonts/
