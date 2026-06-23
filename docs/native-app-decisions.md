@@ -52,6 +52,8 @@ Pop Shell is included as the first GNOME tiling trial because it is the closest 
 
 `ohno-scroller@ohnoibrokeit.dev` is the repo-native prototype for the preferred terminal workflow: niri-style scrolling columns first, with Hyprland-like dwindle as a possible later per-workspace layout mode.
 
+`ohno-wallpaper@ohnoibrokeit.dev` is the repo-native prototype for real GNOME per-monitor wallpaper management. It composes one spanned image from per-monitor source directories and can optionally download Wallhaven images into a local wallpaper directory.
+
 ## After Rebasing
 
 Remove duplicate Flatpaks for packages now provided natively:

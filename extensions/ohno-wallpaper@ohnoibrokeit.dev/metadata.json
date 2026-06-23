@@ -1,0 +1,9 @@
+{
+  "uuid": "ohno-wallpaper@ohnoibrokeit.dev",
+  "name": "Oh No Wallpaper",
+  "description": "Per-monitor wallpaper rotation with optional Wallhaven downloads.",
+  "shell-version": ["50"],
+  "settings-schema": "dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper",
+  "url": "https://github.com/OhNoIBrokeIt/bluefin-gaming-dx",
+  "version": 1
+}

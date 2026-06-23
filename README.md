@@ -28,6 +28,7 @@ This variant:
 - preserves NVIDIA Open compatibility from Bluefin
 - preserves HDR support provided by the base image stack
 - installs native Steam, Ghostty, Gamescope, Gamemode, MangoHud, Vulkan tools, Protontricks, Winetricks, Wine runtime packages, Kitty, NordVPN, Proton VPN, Slack, WinBoat, and Steam/Proton multilib dependencies
+- includes experimental repo-native GNOME extensions for scrolling-column tiling and per-monitor wallpaper composition
 - removes the Visual Studio Code RPM package `code`
 
 ### bluefin-gaming-hypr-dx

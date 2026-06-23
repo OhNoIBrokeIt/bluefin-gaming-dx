@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper" path="/dev/ohnoibrokeit/gnome-shell/extensions/ohno-wallpaper/">
+    <key name="enabled" type="b">
+      <default>true</default>
+      <summary>Enable wallpaper management</summary>
+      <description>Whether the extension should generate and apply spanned per-monitor wallpapers.</description>
+    </key>
+    <key name="default-directory" type="s">
+      <default>''</default>
+      <summary>Default wallpaper directory</summary>
+      <description>Fallback directory used for monitors without an explicit directory mapping.</description>
+    </key>
+    <key name="monitor-directories" type="a{ss}">
+      <default>{}</default>
+      <summary>Monitor wallpaper directories</summary>
+      <description>Map of monitor connector names or numeric monitor indexes to wallpaper directories.</description>
+    </key>
+    <key name="recursive" type="b">
+      <default>true</default>
+      <summary>Scan directories recursively</summary>
+      <description>Whether wallpaper directories should include image files from child directories.</description>
+    </key>
+    <key name="image-extensions" type="as">
+      <default>['.jpg', '.jpeg', '.png', '.webp']</default>
+      <summary>Image file extensions</summary>
+      <description>File extensions considered valid wallpaper images.</description>
+    </key>
+    <key name="refresh-minutes" type="i">
+      <default>30</default>
+      <range min="0" max="1440"/>
+      <summary>Wallpaper refresh interval</summary>
+      <description>Minutes between automatic wallpaper refreshes. Zero disables timed refresh.</description>
+    </key>
+    <key name="cache-directory" type="s">
+      <default>''</default>
+      <summary>Generated wallpaper cache directory</summary>
+      <description>Directory for generated spanned wallpaper files. Empty uses the user cache directory.</description>
+    </key>
+    <key name="wallhaven-enabled" type="b">
+      <default>false</default>
+      <summary>Enable Wallhaven downloads</summary>
+      <description>Whether Wallhaven should periodically download wallpapers into the configured Wallhaven directory.</description>
+    </key>
+    <key name="wallhaven-directory" type="s">
+      <default>''</default>
+      <summary>Wallhaven download directory</summary>
+      <description>Directory where downloaded Wallhaven images are stored.</description>
+    </key>
+    <key name="wallhaven-query" type="s">
+      <default>''</default>
+      <summary>Wallhaven search query</summary>
+      <description>Search query sent to the Wallhaven API.</description>
+    </key>
+    <key name="wallhaven-categories" type="s">
+      <default>'111'</default>
+      <summary>Wallhaven categories</summary>
+      <description>Wallhaven category bit field, such as 111 for general, anime, and people.</description>
+    </key>
+    <key name="wallhaven-purity" type="s">
+      <default>'100'</default>
+      <summary>Wallhaven purity</summary>
+      <description>Wallhaven purity bit field. Use conservative values unless an API key is configured.</description>
+    </key>
+    <key name="wallhaven-sorting" type="s">
+      <default>'random'</default>
+      <summary>Wallhaven sorting</summary>
+      <description>Wallhaven sorting mode, such as random, relevance, date_added, views, favorites, or toplist.</description>
+    </key>
+    <key name="wallhaven-atleast" type="s">
+      <default>'3840x2160'</default>
+      <summary>Wallhaven minimum resolution</summary>
+      <description>Minimum image resolution requested from Wallhaven.</description>
+    </key>
+    <key name="wallhaven-api-key" type="s">
+      <default>''</default>
+      <summary>Wallhaven API key</summary>
+      <description>Optional Wallhaven API key. Leave empty for public searches.</description>
+    </key>
+    <key name="wallhaven-refresh-minutes" type="i">
+      <default>120</default>
+      <range min="0" max="1440"/>
+      <summary>Wallhaven refresh interval</summary>
+      <description>Minutes between Wallhaven download attempts. Zero disables timed downloads.</description>
+    </key>
+  </schema>
+</schemalist>

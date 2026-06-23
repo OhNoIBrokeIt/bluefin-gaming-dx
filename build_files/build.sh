@@ -26,6 +26,8 @@ PROTONVPN_RELEASE_RPM_SHA256="${PROTONVPN_RELEASE_RPM_SHA256:-c3a4ca5943b1429975
 PROTONVPN_RELEASE_RPM="/tmp/protonvpn-stable-release-${PROTONVPN_RELEASE_VERSION}-1.noarch.rpm"
 OHNO_SCROLLER_UUID="ohno-scroller@ohnoibrokeit.dev"
 OHNO_SCROLLER_SCHEMA="dev.ohnoibrokeit.gnome-shell.extensions.ohno-scroller.gschema.xml"
+OHNO_WALLPAPER_UUID="ohno-wallpaper@ohnoibrokeit.dev"
+OHNO_WALLPAPER_SCHEMA="dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper.gschema.xml"
 
 if rpm -q code >/dev/null; then
   dnf5 -y remove code
@@ -167,6 +169,13 @@ cp -a "/ctx/extensions/${OHNO_SCROLLER_UUID}/." "/usr/share/gnome-shell/extensio
 install -m 0644 \
   "/ctx/extensions/${OHNO_SCROLLER_UUID}/schemas/${OHNO_SCROLLER_SCHEMA}" \
   "/usr/share/glib-2.0/schemas/${OHNO_SCROLLER_SCHEMA}"
+
+rm -rf "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}"
+install -d "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}"
+cp -a "/ctx/extensions/${OHNO_WALLPAPER_UUID}/." "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}/"
+install -m 0644 \
+  "/ctx/extensions/${OHNO_WALLPAPER_UUID}/schemas/${OHNO_WALLPAPER_SCHEMA}" \
+  "/usr/share/glib-2.0/schemas/${OHNO_WALLPAPER_SCHEMA}"
 glib-compile-schemas /usr/share/glib-2.0/schemas
 
 /ctx/verify-multilib.sh
