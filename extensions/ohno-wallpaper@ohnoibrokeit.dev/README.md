@@ -21,12 +21,15 @@ gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper monitor-dir
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper refresh-minutes 30
 ```
 
-Wallhaven can be enabled as a feeder directory:
+Wallhaven can be enabled as a per-monitor feeder. `wallhaven-directory`,
+`wallhaven-query`, and `wallhaven-atleast` are defaults. The map settings
+override those defaults for specific monitor connectors:
 
 ```bash
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-enabled true
-gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-query 'mountains'
-gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-directory "$HOME/Pictures/Wallpapers/wallhaven"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-directories "{'DP-1': '$HOME/Pictures/Wallpapers/wallhaven/ultrawide', 'HDMI-1': '$HOME/Pictures/Wallpapers/wallhaven/vertical'}"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-queries "{'DP-1': 'mountains 5120x1440', 'HDMI-1': 'forest portrait'}"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-atleasts "{'DP-1': '5120x1440', 'HDMI-1': '2160x3840'}"
 ```
 
 Monitor keys prefer connector names from Mutter, such as `DP-1` or `HDMI-1`.

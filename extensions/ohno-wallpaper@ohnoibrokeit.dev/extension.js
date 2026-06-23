@@ -219,27 +219,46 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
     }
 
     _directoryForMonitor(monitorIndex) {
-        const directories = this._settings.get_value('monitor-directories').deep_unpack();
-        const connector = this._monitorConnector(monitorIndex);
-        const candidates = [
-            connector,
-            String(monitorIndex),
-        ];
+        const directory = this._mappedSettingForMonitor('monitor-directories', monitorIndex);
+        if (directory)
+            return this._expandPath(directory);
 
-        for (const key of candidates) {
-            if (key && directories[key])
-                return this._expandPath(directories[key]);
-        }
+        const wallhavenDirectory = this._mappedSettingForMonitor('wallhaven-directories', monitorIndex);
+        if (this._settings.get_boolean('wallhaven-enabled') && wallhavenDirectory)
+            return this._expandPath(wallhavenDirectory);
 
         const defaultDirectory = this._settings.get_string('default-directory');
         if (defaultDirectory)
             return this._expandPath(defaultDirectory);
 
-        const wallhavenDirectory = this._settings.get_string('wallhaven-directory');
-        if (this._settings.get_boolean('wallhaven-enabled') && wallhavenDirectory)
-            return this._expandPath(wallhavenDirectory);
+        const defaultWallhavenDirectory = this._settings.get_string('wallhaven-directory');
+        if (this._settings.get_boolean('wallhaven-enabled') && defaultWallhavenDirectory)
+            return this._expandPath(defaultWallhavenDirectory);
 
         return null;
+    }
+
+    _mappedSettingForMonitor(mapKey, monitorIndex) {
+        const values = this._settings.get_value(mapKey).deep_unpack();
+
+        for (const key of this._monitorKeys(monitorIndex)) {
+            if (values[key])
+                return values[key];
+        }
+
+        return null;
+    }
+
+    _monitorKeys(monitorIndex) {
+        const keys = [];
+        const connector = this._monitorConnector(monitorIndex);
+
+        if (connector)
+            keys.push(connector);
+
+        keys.push(String(monitorIndex));
+
+        return [...new Set(keys)];
     }
 
     _monitorConnector(monitorIndex) {
@@ -351,18 +370,68 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
         if (this._wallhavenDownloadInProgress)
             return;
 
-        const directory = this._settings.get_string('wallhaven-directory');
-        if (!directory)
+        const jobs = this._wallhavenJobs();
+        if (jobs.length === 0)
             return;
 
-        const url = this._wallhavenSearchUrl();
-        const message = Soup.Message.new('GET', url);
+        let pending = jobs.length;
+        const finish = () => {
+            pending--;
+            if (pending > 0)
+                return;
+
+            this._wallhavenDownloadInProgress = false;
+            if (this._settings && !this._cancellable?.is_cancelled())
+                this._queueRefresh();
+        };
+
+        this._wallhavenDownloadInProgress = true;
+        for (const job of jobs)
+            this._fetchWallhavenJob(job, finish);
+    }
+
+    _wallhavenJobs() {
+        const monitors = Main.layoutManager.monitors ?? [];
+        const wallhavenDirectories = this._settings.get_value('wallhaven-directories').deep_unpack();
+        const hasMonitorDirectories = Object.keys(wallhavenDirectories).length > 0;
+
+        if (!hasMonitorDirectories) {
+            const directory = this._settings.get_string('wallhaven-directory');
+            if (!directory)
+                return [];
+
+            return [{
+                directory: this._expandPath(directory),
+                query: this._settings.get_string('wallhaven-query'),
+                atleast: this._settings.get_string('wallhaven-atleast'),
+            }];
+        }
+
+        const jobs = [];
+        for (let index = 0; index < monitors.length; index++) {
+            const directory = this._mappedSettingForMonitor('wallhaven-directories', index);
+            if (!directory)
+                continue;
+
+            jobs.push({
+                directory: this._expandPath(directory),
+                query: this._mappedSettingForMonitor('wallhaven-queries', index) ??
+                    this._settings.get_string('wallhaven-query'),
+                atleast: this._mappedSettingForMonitor('wallhaven-atleasts', index) ??
+                    this._settings.get_string('wallhaven-atleast'),
+            });
+        }
+
+        return jobs;
+    }
+
+    _fetchWallhavenJob(job, finish) {
+        const message = Soup.Message.new('GET', this._wallhavenSearchUrl(job));
         const apiKey = this._settings.get_string('wallhaven-api-key');
 
         if (apiKey)
             message.request_headers.append('X-API-Key', apiKey);
 
-        this._wallhavenDownloadInProgress = true;
         this._session.send_and_read_async(
             message,
             GLib.PRIORITY_DEFAULT,
@@ -373,22 +442,26 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
                     const payload = JSON.parse(new TextDecoder().decode(bytes.toArray()));
                     const items = payload.data ?? [];
 
-                    if (items.length === 0)
+                    if (items.length === 0) {
+                        finish();
                         return;
+                    }
 
                     const item = items[Math.floor(Math.random() * items.length)];
                     if (item?.path)
-                        this._downloadWallhavenImage(item.path);
+                        this._downloadWallhavenImage(item.path, job.directory, finish);
+                    else
+                        finish();
                 } catch (error) {
-                    if (!this._cancellable?.is_cancelled())
+                    if (this._settings && !this._cancellable?.is_cancelled())
                         logError(error, 'Oh No Wallpaper failed to query Wallhaven');
-                    this._wallhavenDownloadInProgress = false;
+                    finish();
                 }
             }
         );
     }
 
-    _downloadWallhavenImage(url) {
+    _downloadWallhavenImage(url, directory, finish) {
         const message = Soup.Message.new('GET', url);
 
         this._session.send_and_read_async(
@@ -398,7 +471,6 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
             (session, result) => {
                 try {
                     const bytes = session.send_and_read_finish(result);
-                    const directory = this._expandPath(this._settings.get_string('wallhaven-directory'));
                     const basename = url.split('/').pop() || `${Date.now()}.jpg`;
                     const targetPath = GLib.build_filenamev([directory, `${Date.now()}-${basename}`]);
                     const file = Gio.File.new_for_path(targetPath);
@@ -413,31 +485,30 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
                         (targetFile, replaceResult) => {
                             try {
                                 targetFile.replace_contents_finish(replaceResult);
-                                this._queueRefresh();
                             } catch (error) {
-                                if (!this._cancellable?.is_cancelled())
+                                if (this._settings && !this._cancellable?.is_cancelled())
                                     logError(error, `Oh No Wallpaper failed to save ${targetPath}`);
                             } finally {
-                                this._wallhavenDownloadInProgress = false;
+                                finish();
                             }
                         }
                     );
                 } catch (error) {
-                    if (!this._cancellable?.is_cancelled())
+                    if (this._settings && !this._cancellable?.is_cancelled())
                         logError(error, `Oh No Wallpaper failed to download ${url}`);
-                    this._wallhavenDownloadInProgress = false;
+                    finish();
                 }
             }
         );
     }
 
-    _wallhavenSearchUrl() {
+    _wallhavenSearchUrl(job) {
         const params = {
-            q: this._settings.get_string('wallhaven-query'),
+            q: job.query,
             categories: this._settings.get_string('wallhaven-categories'),
             purity: this._settings.get_string('wallhaven-purity'),
             sorting: this._settings.get_string('wallhaven-sorting'),
-            atleast: this._settings.get_string('wallhaven-atleast'),
+            atleast: job.atleast,
             page: String(Math.max(1, Math.floor(Math.random() * 10) + 1)),
         };
 

@@ -48,8 +48,10 @@ Wallhaven:
 
 ```bash
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-enabled true
-gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-query 'mountains'
-gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-directory "$HOME/Pictures/Wallpapers/wallhaven"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-directories "{'DP-1': '$HOME/Pictures/Wallpapers/wallhaven/ultrawide', 'DP-2': '$HOME/Pictures/Wallpapers/wallhaven/4k'}"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-queries "{'DP-1': 'ultrawide landscape', 'DP-2': '4k landscape'}"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-atleasts "{'DP-1': '5120x1440', 'DP-2': '3840x2160'}"
+gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-fetch-token "$(($(gsettings get dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper wallhaven-fetch-token) + 1))"
 ```
 
 ## Native app follow-up

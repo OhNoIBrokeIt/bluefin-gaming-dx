@@ -166,6 +166,7 @@ dnf5 -y --setopt=tsflags=noscripts install proton-vpn-gnome-desktop
 rm -rf "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}"
 install -d "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}" /usr/share/glib-2.0/schemas
 cp -a "/ctx/extensions/${OHNO_SCROLLER_UUID}/." "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}/"
+glib-compile-schemas "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}/schemas"
 install -m 0644 \
   "/ctx/extensions/${OHNO_SCROLLER_UUID}/schemas/${OHNO_SCROLLER_SCHEMA}" \
   "/usr/share/glib-2.0/schemas/${OHNO_SCROLLER_SCHEMA}"
@@ -173,6 +174,7 @@ install -m 0644 \
 rm -rf "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}"
 install -d "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}"
 cp -a "/ctx/extensions/${OHNO_WALLPAPER_UUID}/." "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}/"
+glib-compile-schemas "/usr/share/gnome-shell/extensions/${OHNO_WALLPAPER_UUID}/schemas"
 install -m 0644 \
   "/ctx/extensions/${OHNO_WALLPAPER_UUID}/schemas/${OHNO_WALLPAPER_SCHEMA}" \
   "/usr/share/glib-2.0/schemas/${OHNO_WALLPAPER_SCHEMA}"

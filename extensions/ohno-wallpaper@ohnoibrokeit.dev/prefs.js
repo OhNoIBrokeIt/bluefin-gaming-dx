@@ -1,4 +1,5 @@
 import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk?version=4.0';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
@@ -17,6 +18,47 @@ function addEntry(group, settings, key, title, subtitle = null) {
         row.set_tooltip_text(subtitle);
 
     settings.bind(key, row, 'text', Gio.SettingsBindFlags.DEFAULT);
+    group.add(row);
+}
+
+function addMappedEntry(group, settings, mapKey, monitor, title, subtitle = null) {
+    const primaryKey = monitor.connector || String(monitor.index);
+    const fallbackKey = String(monitor.index);
+    let refreshing = false;
+    const row = new Adw.EntryRow({
+        title: `${monitor.label} ${title}`,
+    });
+
+    if (subtitle)
+        row.set_tooltip_text(subtitle);
+
+    const refresh = () => {
+        const values = settings.get_value(mapKey).deep_unpack();
+        refreshing = true;
+        row.text = values[primaryKey] ?? values[fallbackKey] ?? '';
+        refreshing = false;
+    };
+
+    row.connect('changed', () => {
+        if (refreshing)
+            return;
+
+        const values = settings.get_value(mapKey).deep_unpack();
+        const value = row.text.trim();
+
+        if (value)
+            values[primaryKey] = value;
+        else
+            delete values[primaryKey];
+
+        if (primaryKey !== fallbackKey)
+            delete values[fallbackKey];
+
+        settings.set_value(mapKey, new GLib.Variant('a{ss}', values));
+    });
+    settings.connect(`changed::${mapKey}`, refresh);
+
+    refresh();
     group.add(row);
 }
 
@@ -67,43 +109,48 @@ function addButton(group, title, subtitle, iconName, callback) {
     group.add(row);
 }
 
-function addMonitorDirectory(group, settings, monitorIndex) {
-    const key = String(monitorIndex);
-    let refreshing = false;
-    const row = new Adw.EntryRow({
-        title: `Monitor ${monitorIndex} directory`,
-    });
+function monitorLabel(monitor, index) {
+    const connector = monitor.get_connector?.() || String(index);
+    const description = monitor.get_description?.();
+    const manufacturer = monitor.get_manufacturer?.();
+    const model = monitor.get_model?.();
+    const name = description || [manufacturer, model].filter(Boolean).join(' ');
 
-    const refresh = () => {
-        const directories = settings.get_value('monitor-directories').deep_unpack();
-        refreshing = true;
-        row.text = directories[key] ?? '';
-        refreshing = false;
+    return {
+        index,
+        connector,
+        label: [connector, name].filter(Boolean).join(' - '),
     };
+}
 
-    row.connect('changed', () => {
-        if (refreshing)
-            return;
+function currentMonitors() {
+    const monitors = [];
 
-        const directories = settings.get_value('monitor-directories').deep_unpack();
-        const path = row.text.trim();
+    try {
+        const display = Gdk.Display.get_default();
+        const model = display?.get_monitors();
+        const count = model?.get_n_items?.() ?? 0;
 
-        if (path)
-            directories[key] = path;
-        else
-            delete directories[key];
+        for (let index = 0; index < count; index++)
+            monitors.push(monitorLabel(model.get_item(index), index));
+    } catch (error) {
+        console.warn(`Oh No Wallpaper failed to read monitor names: ${error}`);
+    }
 
-        settings.set_value('monitor-directories', new GLib.Variant('a{ss}', directories));
-    });
-    settings.connect('changed::monitor-directories', refresh);
+    if (monitors.length > 0)
+        return monitors;
 
-    refresh();
-    group.add(row);
+    return [0, 1, 2, 3].map(index => ({
+        index,
+        connector: String(index),
+        label: `Monitor ${index}`,
+    }));
 }
 
 export default class OhNoWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
+        const monitors = currentMonitors();
         const page = new Adw.PreferencesPage({
             title: 'Wallpaper',
             icon_name: 'preferences-desktop-wallpaper-symbolic',
@@ -125,10 +172,8 @@ export default class OhNoWallpaperPrefs extends ExtensionPreferences {
         });
         page.add(directoriesGroup);
         addEntry(directoriesGroup, settings, 'default-directory', 'Default directory', 'Fallback directory for monitors without a dedicated path.');
-        addMonitorDirectory(directoriesGroup, settings, 0);
-        addMonitorDirectory(directoriesGroup, settings, 1);
-        addMonitorDirectory(directoriesGroup, settings, 2);
-        addMonitorDirectory(directoriesGroup, settings, 3);
+        for (const monitor of monitors)
+            addMappedEntry(directoriesGroup, settings, 'monitor-directories', monitor, 'local directory');
         addEntry(directoriesGroup, settings, 'cache-directory', 'Generated image cache directory', 'Leave empty to use the default user cache directory.');
 
         const wallhavenGroup = new Adw.PreferencesGroup({
@@ -136,15 +181,20 @@ export default class OhNoWallpaperPrefs extends ExtensionPreferences {
         });
         page.add(wallhavenGroup);
         addSwitch(wallhavenGroup, settings, 'wallhaven-enabled', 'Download from Wallhaven');
-        addEntry(wallhavenGroup, settings, 'wallhaven-directory', 'Download directory');
-        addEntry(wallhavenGroup, settings, 'wallhaven-query', 'Search query');
-        addEntry(wallhavenGroup, settings, 'wallhaven-atleast', 'Minimum resolution');
+        addEntry(wallhavenGroup, settings, 'wallhaven-directory', 'Default download directory', 'Fallback used when no per-monitor Wallhaven directory is set.');
+        addEntry(wallhavenGroup, settings, 'wallhaven-query', 'Default search query', 'Fallback used when no per-monitor Wallhaven query is set.');
+        addEntry(wallhavenGroup, settings, 'wallhaven-atleast', 'Default minimum resolution', 'Fallback used when no per-monitor Wallhaven minimum is set.');
+        for (const monitor of monitors) {
+            addMappedEntry(wallhavenGroup, settings, 'wallhaven-directories', monitor, 'Wallhaven directory');
+            addMappedEntry(wallhavenGroup, settings, 'wallhaven-queries', monitor, 'Wallhaven query');
+            addMappedEntry(wallhavenGroup, settings, 'wallhaven-atleasts', monitor, 'Wallhaven minimum resolution');
+        }
         addEntry(wallhavenGroup, settings, 'wallhaven-sorting', 'Sorting');
         addEntry(wallhavenGroup, settings, 'wallhaven-categories', 'Categories');
         addEntry(wallhavenGroup, settings, 'wallhaven-purity', 'Purity');
         addEntry(wallhavenGroup, settings, 'wallhaven-api-key', 'API key');
         addSpin(wallhavenGroup, settings, 'wallhaven-refresh-minutes', 'Download interval', 0, 1440, 10, 'Minutes. Set to 0 to disable automatic downloads.');
-        addButton(wallhavenGroup, 'Download now', 'Fetch one image into the Wallhaven directory.', 'folder-download-symbolic', () => {
+        addButton(wallhavenGroup, 'Download now', 'Fetch one image for each configured Wallhaven monitor directory.', 'folder-download-symbolic', () => {
             settings.set_int('wallhaven-fetch-token', settings.get_int('wallhaven-fetch-token') + 1);
         });
 

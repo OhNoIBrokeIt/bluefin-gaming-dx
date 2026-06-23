@@ -49,13 +49,23 @@
     </key>
     <key name="wallhaven-directory" type="s">
       <default>''</default>
-      <summary>Wallhaven download directory</summary>
-      <description>Directory where downloaded Wallhaven images are stored.</description>
+      <summary>Default Wallhaven download directory</summary>
+      <description>Fallback directory where downloaded Wallhaven images are stored for monitors without a dedicated Wallhaven directory.</description>
+    </key>
+    <key name="wallhaven-directories" type="a{ss}">
+      <default>{}</default>
+      <summary>Per-monitor Wallhaven download directories</summary>
+      <description>Map of monitor connector names or numeric monitor indexes to Wallhaven download directories.</description>
     </key>
     <key name="wallhaven-query" type="s">
       <default>''</default>
-      <summary>Wallhaven search query</summary>
-      <description>Search query sent to the Wallhaven API.</description>
+      <summary>Default Wallhaven search query</summary>
+      <description>Fallback search query sent to the Wallhaven API for monitors without a dedicated query.</description>
+    </key>
+    <key name="wallhaven-queries" type="a{ss}">
+      <default>{}</default>
+      <summary>Per-monitor Wallhaven search queries</summary>
+      <description>Map of monitor connector names or numeric monitor indexes to Wallhaven search queries.</description>
     </key>
     <key name="wallhaven-categories" type="s">
       <default>'111'</default>
@@ -74,8 +84,13 @@
     </key>
     <key name="wallhaven-atleast" type="s">
       <default>'3840x2160'</default>
-      <summary>Wallhaven minimum resolution</summary>
-      <description>Minimum image resolution requested from Wallhaven.</description>
+      <summary>Default Wallhaven minimum resolution</summary>
+      <description>Fallback minimum image resolution requested from Wallhaven for monitors without a dedicated minimum resolution.</description>
+    </key>
+    <key name="wallhaven-atleasts" type="a{ss}">
+      <default>{}</default>
+      <summary>Per-monitor Wallhaven minimum resolutions</summary>
+      <description>Map of monitor connector names or numeric monitor indexes to Wallhaven minimum resolutions.</description>
     </key>
     <key name="wallhaven-api-key" type="s">
       <default>''</default>
