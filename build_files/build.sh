@@ -154,7 +154,7 @@ curl -fsSL --retry 3 --retry-delay 2 --output "${PROTONVPN_RELEASE_RPM}" "${PROT
 echo "${PROTONVPN_RELEASE_RPM_SHA256}  ${PROTONVPN_RELEASE_RPM}" | sha256sum --check --status
 dnf5 -y install "${PROTONVPN_RELEASE_RPM}"
 rm -f "${PROTONVPN_RELEASE_RPM}"
-dnf5 -y install proton-vpn-gnome-desktop
+dnf5 -y --setopt=tsflags=noscripts install proton-vpn-gnome-desktop
 
 /ctx/verify-multilib.sh
 
