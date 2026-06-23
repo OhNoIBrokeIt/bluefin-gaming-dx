@@ -271,6 +271,7 @@ The Fedora 44 package names used by the GNOME image are intentionally plain RPM 
 - `mangohud.i686` and `gamemode.i686` are included for 32-bit game/runtime coverage.
 - `ghostty`, `kitty`, `freerdp`, `podman`, and `podman-compose` are Fedora package names used to support terminal workflows and WinBoat's Podman backend.
 - `gnome-shell-extension-appindicator` and `gnome-extensions-app` are included so Slack and Proton VPN can use GNOME tray/AppIndicator support.
+- `gnome-shell-extension-pop-shell` and `gnome-shell-extension-pop-shell-shortcut-overrides` are included as the first GNOME tiling trial. Enable `pop-shell@system76.com` per-user after boot to test whether its tiling model is close enough to tune or fork.
 
 WinBoat is not installed from Fedora repositories. The GNOME image downloads the upstream unpacked tarball release asset from:
 

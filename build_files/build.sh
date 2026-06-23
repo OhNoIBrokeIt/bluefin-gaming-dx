@@ -56,6 +56,8 @@ dnf5 -y install \
   gamemode.i686 \
   gnome-extensions-app \
   gnome-shell-extension-appindicator \
+  gnome-shell-extension-pop-shell \
+  gnome-shell-extension-pop-shell-shortcut-overrides \
   gtk3 \
   kitty \
   libappindicator-gtk3 \

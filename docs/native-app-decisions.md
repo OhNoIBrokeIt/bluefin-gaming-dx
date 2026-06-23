@@ -46,6 +46,10 @@ Do not add this casually. Unlike normal desktop apps, OpenRazer includes a DKMS 
 
 Ghostty is installed explicitly in the base image. Fedora 44 does not provide it in the standard repositories used by this image, so the build enables the `alternateved/ghostty` COPR.
 
+## GNOME Tiling Trial
+
+Pop Shell is included as the first GNOME tiling trial because it is the closest packaged extension to the desired Hyprland-style workflow. Treat this as an evaluation path: if the tiling model, per-workspace behavior, and custom keybindings are close enough, tune or fork it. If not, use it as a reference for a smaller custom tiling extension.
+
 ## After Rebasing
 
 Remove duplicate Flatpaks for packages now provided natively:
