@@ -24,6 +24,8 @@ PROTONVPN_RELEASE_VERSION="${PROTONVPN_RELEASE_VERSION:-1.0.4}"
 PROTONVPN_RELEASE_RPM_URL="${PROTONVPN_RELEASE_RPM_URL:-https://repo.protonvpn.com/fedora-44-stable/protonvpn-stable-release/protonvpn-stable-release-${PROTONVPN_RELEASE_VERSION}-1.noarch.rpm}"
 PROTONVPN_RELEASE_RPM_SHA256="${PROTONVPN_RELEASE_RPM_SHA256:-c3a4ca5943b142997597c1e1248226cfafbabe914c89895e0a8b2890e422657c}"
 PROTONVPN_RELEASE_RPM="/tmp/protonvpn-stable-release-${PROTONVPN_RELEASE_VERSION}-1.noarch.rpm"
+OHNO_SCROLLER_UUID="ohno-scroller@ohnoibrokeit.dev"
+OHNO_SCROLLER_SCHEMA="dev.ohnoibrokeit.gnome-shell.extensions.ohno-scroller.gschema.xml"
 
 if rpm -q code >/dev/null; then
   dnf5 -y remove code
@@ -158,6 +160,14 @@ echo "${PROTONVPN_RELEASE_RPM_SHA256}  ${PROTONVPN_RELEASE_RPM}" | sha256sum --c
 dnf5 -y install "${PROTONVPN_RELEASE_RPM}"
 rm -f "${PROTONVPN_RELEASE_RPM}"
 dnf5 -y --setopt=tsflags=noscripts install proton-vpn-gnome-desktop
+
+rm -rf "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}"
+install -d "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}" /usr/share/glib-2.0/schemas
+cp -a "/ctx/extensions/${OHNO_SCROLLER_UUID}/." "/usr/share/gnome-shell/extensions/${OHNO_SCROLLER_UUID}/"
+install -m 0644 \
+  "/ctx/extensions/${OHNO_SCROLLER_UUID}/schemas/${OHNO_SCROLLER_SCHEMA}" \
+  "/usr/share/glib-2.0/schemas/${OHNO_SCROLLER_SCHEMA}"
+glib-compile-schemas /usr/share/glib-2.0/schemas
 
 /ctx/verify-multilib.sh
 

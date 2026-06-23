@@ -4,3 +4,4 @@ output/
 previous.manifest.json
 changelog.md
 output.env
+extensions/**/schemas/gschemas.compiled

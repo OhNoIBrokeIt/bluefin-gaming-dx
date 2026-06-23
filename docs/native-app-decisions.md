@@ -50,6 +50,8 @@ Ghostty is installed explicitly in the base image. Fedora 44 does not provide it
 
 Pop Shell is included as the first GNOME tiling trial because it is the closest packaged extension to the desired Hyprland-style workflow. Treat this as an evaluation path: if the tiling model, per-workspace behavior, and custom keybindings are close enough, tune or fork it. If not, use it as a reference for a smaller custom tiling extension.
 
+`ohno-scroller@ohnoibrokeit.dev` is the repo-native prototype for the preferred terminal workflow: niri-style scrolling columns first, with Hyprland-like dwindle as a possible later per-workspace layout mode.
+
 ## After Rebasing
 
 Remove duplicate Flatpaks for packages now provided natively:
