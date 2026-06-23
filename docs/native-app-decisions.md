@@ -54,6 +54,8 @@ Pop Shell is included as the first GNOME tiling trial because it is the closest 
 
 `ohno-wallpaper@ohnoibrokeit.dev` is the repo-native prototype for real GNOME per-monitor wallpaper management. It composes one spanned image from per-monitor source directories and can optionally download Wallhaven images into a local wallpaper directory.
 
+Both custom extensions include GNOME preferences panels so they can be configured and tested without raw `gsettings` commands.
+
 ## After Rebasing
 
 Remove duplicate Flatpaks for packages now provided natively:

@@ -31,6 +31,13 @@ This variant:
 - includes experimental repo-native GNOME extensions for scrolling-column tiling and per-monitor wallpaper composition
 - removes the Visual Studio Code RPM package `code`
 
+The custom GNOME extensions ship with preferences panels:
+
+```bash
+gnome-extensions prefs ohno-scroller@ohnoibrokeit.dev
+gnome-extensions prefs ohno-wallpaper@ohnoibrokeit.dev
+```
+
 ### bluefin-gaming-hypr-dx
 
 Base image:

@@ -23,8 +23,10 @@ export default class OhNoWallpaperExtension extends ExtensionBase {
         this._wallhavenDownloadInProgress = false;
 
         this._connect(Main.layoutManager, 'monitors-changed', () => this._queueRefresh());
-        this._connect(this._settings, 'changed', () => {
+        this._connect(this._settings, 'changed', (_settings, key) => {
             this._scheduleTimers();
+            if (key === 'wallhaven-fetch-token')
+                this._fetchWallhaven();
             this._queueRefresh();
         });
 

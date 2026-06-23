@@ -32,6 +32,11 @@
       <summary>Wallpaper refresh interval</summary>
       <description>Minutes between automatic wallpaper refreshes. Zero disables timed refresh.</description>
     </key>
+    <key name="shuffle-token" type="i">
+      <default>0</default>
+      <summary>Shuffle token</summary>
+      <description>Incremented by the preferences UI to request an immediate wallpaper refresh.</description>
+    </key>
     <key name="cache-directory" type="s">
       <default>''</default>
       <summary>Generated wallpaper cache directory</summary>
@@ -82,6 +87,11 @@
       <range min="0" max="1440"/>
       <summary>Wallhaven refresh interval</summary>
       <description>Minutes between Wallhaven download attempts. Zero disables timed downloads.</description>
+    </key>
+    <key name="wallhaven-fetch-token" type="i">
+      <default>0</default>
+      <summary>Wallhaven fetch token</summary>
+      <description>Incremented by the preferences UI to request an immediate Wallhaven download.</description>
     </key>
   </schema>
 </schemalist>

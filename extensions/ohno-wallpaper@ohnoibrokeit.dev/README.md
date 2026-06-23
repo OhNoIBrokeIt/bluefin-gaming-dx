@@ -10,6 +10,12 @@ monitor its own wallpaper source.
 Configure it with `gsettings`:
 
 ```bash
+gnome-extensions prefs ohno-wallpaper@ohnoibrokeit.dev
+```
+
+Or configure it directly with `gsettings`:
+
+```bash
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper default-directory "$HOME/Pictures/Wallpapers/default"
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper monitor-directories "{'DP-1': '$HOME/Pictures/Wallpapers/ultrawide', 'HDMI-1': '$HOME/Pictures/Wallpapers/vertical'}"
 gsettings set dev.ohnoibrokeit.gnome-shell.extensions.ohno-wallpaper refresh-minutes 30
