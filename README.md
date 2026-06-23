@@ -272,19 +272,19 @@ The Fedora 44 package names used by the GNOME image are intentionally plain RPM 
 - `ghostty`, `kitty`, `freerdp`, `podman`, and `podman-compose` are Fedora package names used to support terminal workflows and WinBoat's Podman backend.
 - `gnome-shell-extension-appindicator` and `gnome-extensions-app` are included so Slack and Proton VPN can use GNOME tray/AppIndicator support.
 
-WinBoat is not installed from Fedora repositories. The GNOME image downloads the upstream Fedora RPM release asset from:
+WinBoat is not installed from Fedora repositories. The GNOME image downloads the upstream unpacked tarball release asset from:
 
 ```text
-https://github.com/TibixDev/winboat/releases/download/v0.9.0/winboat-0.9.0-x86_64.rpm
+https://github.com/TibixDev/winboat/releases/download/v0.9.0/winboat-0.9.0-x64.tar.gz
 ```
 
 The build pins that asset with this SHA-256 digest:
 
 ```text
-64338d6d61faf761a441fc59d3129aa346ce65905e12af329a08dff40308f5f7
+9be10ccc06d0f999d10075cd127fba694eda841d3a533bde3776552fa66ae9e5
 ```
 
-WinBoat remains beta software and requires KVM-enabled hardware. The image provides the application, Podman Compose, and FreeRDP 3.x; user-specific Windows setup still happens after first launch.
+WinBoat remains beta software and requires KVM-enabled hardware. The image provides the application, Podman Compose, FreeRDP 3.x, and the runtime libraries declared by the upstream RPM; user-specific Windows setup still happens after first launch.
 
 Slack is installed from Slack's official Linux RPM download rather than the unverified Flathub wrapper:
 

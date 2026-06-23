@@ -11,9 +11,9 @@ GHOSTTY_COPR_OWNER="${GHOSTTY_COPR_OWNER:-alternateved}"
 GHOSTTY_COPR_PROJECT="${GHOSTTY_COPR_PROJECT:-ghostty}"
 GHOSTTY_COPR_CHROOT="${GHOSTTY_COPR_CHROOT:-fedora-${VERSION_ID}-$(uname -m)}"
 WINBOAT_VERSION="${WINBOAT_VERSION:-0.9.0}"
-WINBOAT_RPM_URL="${WINBOAT_RPM_URL:-https://github.com/TibixDev/winboat/releases/download/v${WINBOAT_VERSION}/winboat-${WINBOAT_VERSION}-x86_64.rpm}"
-WINBOAT_RPM_SHA256="${WINBOAT_RPM_SHA256:-64338d6d61faf761a441fc59d3129aa346ce65905e12af329a08dff40308f5f7}"
-WINBOAT_RPM="/tmp/winboat-${WINBOAT_VERSION}-x86_64.rpm"
+WINBOAT_TARBALL_URL="${WINBOAT_TARBALL_URL:-https://github.com/TibixDev/winboat/releases/download/v${WINBOAT_VERSION}/winboat-${WINBOAT_VERSION}-x64.tar.gz}"
+WINBOAT_TARBALL_SHA256="${WINBOAT_TARBALL_SHA256:-9be10ccc06d0f999d10075cd127fba694eda841d3a533bde3776552fa66ae9e5}"
+WINBOAT_TARBALL="/tmp/winboat-${WINBOAT_VERSION}-x64.tar.gz"
 SLACK_VERSION="${SLACK_VERSION:-4.50.136}"
 SLACK_RPM_URL="${SLACK_RPM_URL:-https://downloads.slack-edge.com/desktop-releases/linux/x64/${SLACK_VERSION}/slack-${SLACK_VERSION}-0.1.el8.x86_64.rpm}"
 SLACK_RPM_SHA256="${SLACK_RPM_SHA256:-efe415e8f2bddf526044dfb0edad8b06bb4053cd8cd42951e2893cfafc818ad2}"
@@ -51,20 +51,27 @@ dnf5 -y upgrade \
 
 dnf5 -y install \
   steam \
+  at-spi2-core \
   ghostty \
   gamescope \
   gamemode \
   gamemode.i686 \
   gnome-extensions-app \
   gnome-shell-extension-appindicator \
+  gtk3 \
   kitty \
   libappindicator-gtk3 \
+  libnotify \
+  libuuid \
+  libXScrnSaver \
+  libXtst \
   mangohud \
   mangohud.i686 \
   podman \
   podman-compose \
   freerdp \
   vulkan-tools \
+  xdg-utils \
   protontricks \
   winetricks \
   wine-core \
@@ -114,10 +121,24 @@ dnf5 -y install \
   pipewire-libs.i686 \
   vulkan-loader.i686
 
-curl -fsSL --retry 3 --retry-delay 2 --output "${WINBOAT_RPM}" "${WINBOAT_RPM_URL}"
-echo "${WINBOAT_RPM_SHA256}  ${WINBOAT_RPM}" | sha256sum --check --status
-dnf5 -y install "${WINBOAT_RPM}"
-rm -f "${WINBOAT_RPM}"
+curl -fsSL --retry 3 --retry-delay 2 --output "${WINBOAT_TARBALL}" "${WINBOAT_TARBALL_URL}"
+echo "${WINBOAT_TARBALL_SHA256}  ${WINBOAT_TARBALL}" | sha256sum --check --status
+rm -rf /usr/lib/winboat
+install -d /usr/lib/winboat /usr/share/applications
+tar -xzf "${WINBOAT_TARBALL}" --strip-components=1 -C /usr/lib/winboat
+chmod 0755 /usr/lib/winboat/chrome-sandbox
+ln -sf /usr/lib/winboat/winboat /usr/bin/winboat
+cat >/usr/share/applications/winboat.desktop <<'EOF'
+[Desktop Entry]
+Name=WinBoat
+Comment=Run Windows apps on Linux
+Exec=winboat %U
+Terminal=false
+Type=Application
+Categories=Utility;System;
+StartupWMClass=winboat
+EOF
+rm -f "${WINBOAT_TARBALL}"
 
 curl -fsSL --retry 3 --retry-delay 2 --output "${SLACK_RPM}" "${SLACK_RPM_URL}"
 echo "${SLACK_RPM_SHA256}  ${SLACK_RPM}" | sha256sum --check --status

@@ -22,6 +22,8 @@ Gamescope should remain native because it participates directly in the graphics/
 
 Podman, Podman Compose, and FreeRDP should remain native for WinBoat. Podman Desktop as a Flatpak is only a GUI/client layer; it does not replace the host container engine, KVM, container networking, sockets, or `/usr/bin/podman` command entrypoints WinBoat expects.
 
+WinBoat is installed from the upstream unpacked tarball rather than the RPM. The RPM installs into `/opt/winboat`, and `/opt` is a `/var/opt` symlink in this bootc image layout, which failed during image composition. Installing the tarball under `/usr/lib/winboat` with a `/usr/bin/winboat` symlink avoids the RPM unpack/scriptlet issue.
+
 Slack should be native because the Flathub Slack wrapper is unverified and explicitly not affiliated with or supported by Slack Technologies. The image uses Slack's official RPM instead.
 
 VPN clients should be native because routing, DNS, kill switches, split tunneling, NetworkManager integration, and daemon/service behavior are host-level concerns. The image installs both NordVPN and Proton VPN natively.
