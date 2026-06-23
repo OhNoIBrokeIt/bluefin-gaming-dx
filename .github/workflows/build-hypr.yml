@@ -26,6 +26,7 @@ env:
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
   SDDM_ASTRONAUT_REF: "cd46736b4135a71700d2225d60eb8e85917585eb"
+  SDDM_ASTRONAUT_VARIANT: "hyprland_kath"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -103,6 +104,7 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.BASE_IMAGE }}
             SDDM_ASTRONAUT_REF=${{ env.SDDM_ASTRONAUT_REF }}
+            SDDM_ASTRONAUT_VARIANT=${{ env.SDDM_ASTRONAUT_VARIANT }}
           containerfiles: |
             ./Containerfile.hypr
           image: ${{ env.IMAGE_NAME }}

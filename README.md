@@ -53,11 +53,13 @@ This variant keeps everything from `bluefin-gaming-dx` and additionally:
 - installs Hyprland
 - installs Hyprland GUI utilities and Qt support
 - installs `xdg-desktop-portal-hyprland`
+- keeps the native app set from `bluefin-gaming-dx`, including Steam, Ghostty, Gamescope, Slack, WinBoat, NordVPN, Proton VPN, Podman, FreeRDP, Protontricks, Winetricks, Wine, Kitty, MangoHud, and Gamemode
 - installs Noctalia Shell from Terra
 - keeps GNOME installed and available from the login screen
 - replaces GDM as the enabled display manager with SDDM
 - installs the SDDM Astronaut theme
-- sets Astronaut as the default SDDM theme
+- sets the Astronaut Hyprland Kath variant as the default SDDM theme
+- installs a switcher for the Astronaut Hyprland Kath and Black Hole SDDM variants
 - installs Qt6/QML dependencies required by the theme
 - enables `sddm.service`
 - disables `gdm.service`
@@ -345,6 +347,10 @@ The Hyprland image adds these Fedora/COPR package names:
 - `hypridle`
 - `waybar`
 - `wofi`
+- `fuzzel`
+- `cliphist`
+- `kde-connect`
+- `qt6ct`
 - `sddm`
 - `qt6-qtsvg`
 - `qt6-qtvirtualkeyboard`
@@ -370,7 +376,22 @@ The build pins the theme source to:
 cd46736b4135a71700d2225d60eb8e85917585eb
 ```
 
-Astronaut is configured as the default SDDM theme through `/etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf`, and the theme metadata is set to `Themes/astronaut.conf`.
+Astronaut is configured through `/etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf`. The Hyprland Kath variant is the default:
+
+```text
+Current=sddm-astronaut-hyprland-kath
+```
+
+The image also installs a root-aware switcher:
+
+```bash
+bluefin-hypr-sddm-theme current
+bluefin-hypr-sddm-theme list
+bluefin-hypr-sddm-theme kath
+bluefin-hypr-sddm-theme black-hole
+```
+
+The switcher changes only the SDDM theme selected in `/etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf`. It does not mutate the Astronaut files under `/usr/share`, which keeps the bootc image layout clean. Restart SDDM or reboot to see the changed greeter.
 
 ## Noctalia
 

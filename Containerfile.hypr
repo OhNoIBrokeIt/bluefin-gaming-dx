@@ -9,7 +9,9 @@ COPY build_files /
 FROM ${BASE_IMAGE}
 
 ARG SDDM_ASTRONAUT_REF=cd46736b4135a71700d2225d60eb8e85917585eb
+ARG SDDM_ASTRONAUT_VARIANT=hyprland_kath
 ENV SDDM_ASTRONAUT_REF="${SDDM_ASTRONAUT_REF}"
+ENV SDDM_ASTRONAUT_VARIANT="${SDDM_ASTRONAUT_VARIANT}"
 
 # Apply Hyprland-only image customizations.
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \

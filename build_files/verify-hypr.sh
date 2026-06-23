@@ -5,6 +5,10 @@ required_packages=(
   hyprland-guiutils
   hyprland-qt-support
   xdg-desktop-portal-hyprland
+  fuzzel
+  cliphist
+  kde-connect
+  qt6ct
   lxpolkit
   sddm
   qt6-qtsvg
@@ -13,11 +17,22 @@ required_packages=(
   qt6-qtdeclarative
   qt6-qtwayland
   steam
+  ghostty
   gamescope
   gamemode
+  kitty
   mangohud
+  nordvpn
+  podman
+  podman-compose
+  freerdp
+  vulkan-tools
   noctalia-shell
+  proton-vpn-gnome-desktop
   protontricks
+  winetricks
+  wine-core
+  slack
 )
 
 for package in "${required_packages[@]}"; do
@@ -37,8 +52,15 @@ required_paths=(
   /usr/share/wayland-sessions/gnome.desktop
   /usr/share/sddm/themes/sddm-astronaut-theme/Main.qml
   /usr/share/sddm/themes/sddm-astronaut-theme/metadata.desktop
+  /usr/share/sddm/themes/sddm-astronaut-theme/Themes/black_hole.conf
+  /usr/share/sddm/themes/sddm-astronaut-theme/Themes/hyprland_kath.conf
+  /usr/share/sddm/themes/sddm-astronaut-hyprland-kath/Main.qml
+  /usr/share/sddm/themes/sddm-astronaut-hyprland-kath/metadata.desktop
+  /usr/share/sddm/themes/sddm-astronaut-black-hole/Main.qml
+  /usr/share/sddm/themes/sddm-astronaut-black-hole/metadata.desktop
   /etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf
   /usr/lib/tmpfiles.d/bluefin-gaming-hypr-dx.conf
+  /usr/bin/bluefin-hypr-sddm-theme
 )
 
 for path in "${required_paths[@]}"; do
@@ -60,13 +82,33 @@ if [[ -n "${unreadable_theme_file}" ]]; then
   exit 1
 fi
 
-if ! grep -q '^Current=sddm-astronaut-theme$' /etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf; then
-  echo "::error::SDDM Astronaut is not configured as the default SDDM theme." >&2
+if ! grep -q '^Current=sddm-astronaut-hyprland-kath$' /etc/sddm.conf.d/10-bluefin-gaming-hypr-theme.conf; then
+  echo "::error::SDDM Astronaut Hyprland Kath is not configured as the default SDDM theme." >&2
   exit 1
 fi
 
 if ! grep -q '^ConfigFile=Themes/astronaut.conf$' /usr/share/sddm/themes/sddm-astronaut-theme/metadata.desktop; then
   echo "::error::SDDM Astronaut metadata is not set to the astronaut theme variant." >&2
+  exit 1
+fi
+
+if ! grep -q '^ConfigFile=Themes/hyprland_kath.conf$' /usr/share/sddm/themes/sddm-astronaut-hyprland-kath/metadata.desktop; then
+  echo "::error::SDDM Astronaut Hyprland Kath metadata is not set to the hyprland_kath variant." >&2
+  exit 1
+fi
+
+if ! grep -q '^ConfigFile=Themes/black_hole.conf$' /usr/share/sddm/themes/sddm-astronaut-black-hole/metadata.desktop; then
+  echo "::error::SDDM Astronaut Black Hole metadata is not set to the black_hole variant." >&2
+  exit 1
+fi
+
+if ! /usr/bin/bluefin-hypr-sddm-theme list | grep -qx 'kath'; then
+  echo "::error::SDDM theme switcher does not list the Kath variant." >&2
+  exit 1
+fi
+
+if ! /usr/bin/bluefin-hypr-sddm-theme list | grep -qx 'black-hole'; then
+  echo "::error::SDDM theme switcher does not list the Black Hole variant." >&2
   exit 1
 fi
 
@@ -84,3 +126,26 @@ if rpm -q code >/dev/null; then
   echo "::error::Visual Studio Code RPM package 'code' must not be installed in this image." >&2
   exit 1
 fi
+
+required_commands=(
+  gamescope
+  ghostty
+  kitty
+  nordvpn
+  podman
+  podman-compose
+  protontricks
+  protonvpn-app
+  slack
+  steam
+  winboat
+  winetricks
+  xfreerdp
+)
+
+for command in "${required_commands[@]}"; do
+  if ! command -v "${command}" >/dev/null; then
+    echo "::error::Required inherited native command '${command}' is missing from the Hyprland image." >&2
+    exit 1
+  fi
+done
