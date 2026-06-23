@@ -298,16 +298,16 @@ The build pins that asset with this SHA-256 digest:
 efe415e8f2bddf526044dfb0edad8b06bb4053cd8cd42951e2893cfafc818ad2
 ```
 
-NordVPN is installed from NordVPN's official RPM repository asset:
+NordVPN is installed from NordVPN's official RPM repository:
 
 ```text
-https://repo.nordvpn.com/yum/nordvpn/centos/x86_64/Packages/n/nordvpn-5.1.0-1.x86_64.rpm
+https://repo.nordvpn.com/yum/nordvpn/centos/x86_64
 ```
 
-The build pins that asset with this SHA-256 digest:
+The build imports NordVPN's repository key and installs the current `nordvpn` package from that repository during image composition. This lets scheduled image rebuilds pick up NordVPN package updates without editing this repository.
 
 ```text
-a0e8c7534f6b15968c15b2d6aa4a8541f8fcb0c7ee9e40691841525c6ab8933e
+https://repo.nordvpn.com/gpg/nordvpn_public.asc
 ```
 
 Proton VPN is installed from Proton's official Fedora 44 stable repository. The repository package is:

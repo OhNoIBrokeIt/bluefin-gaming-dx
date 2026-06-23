@@ -18,10 +18,8 @@ SLACK_VERSION="${SLACK_VERSION:-4.50.136}"
 SLACK_RPM_URL="${SLACK_RPM_URL:-https://downloads.slack-edge.com/desktop-releases/linux/x64/${SLACK_VERSION}/slack-${SLACK_VERSION}-0.1.el8.x86_64.rpm}"
 SLACK_RPM_SHA256="${SLACK_RPM_SHA256:-efe415e8f2bddf526044dfb0edad8b06bb4053cd8cd42951e2893cfafc818ad2}"
 SLACK_RPM="/tmp/slack-${SLACK_VERSION}-0.1.el8.x86_64.rpm"
-NORDVPN_VERSION="${NORDVPN_VERSION:-5.1.0}"
-NORDVPN_RPM_URL="${NORDVPN_RPM_URL:-https://repo.nordvpn.com/yum/nordvpn/centos/x86_64/Packages/n/nordvpn-${NORDVPN_VERSION}-1.x86_64.rpm}"
-NORDVPN_RPM_SHA256="${NORDVPN_RPM_SHA256:-a0e8c7534f6b15968c15b2d6aa4a8541f8fcb0c7ee9e40691841525c6ab8933e}"
-NORDVPN_RPM="/tmp/nordvpn-${NORDVPN_VERSION}-1.x86_64.rpm"
+NORDVPN_REPO_URL="${NORDVPN_REPO_URL:-https://repo.nordvpn.com/yum/nordvpn/centos/$(uname -m)}"
+NORDVPN_GPG_KEY_URL="${NORDVPN_GPG_KEY_URL:-https://repo.nordvpn.com/gpg/nordvpn_public.asc}"
 PROTONVPN_RELEASE_VERSION="${PROTONVPN_RELEASE_VERSION:-1.0.4}"
 PROTONVPN_RELEASE_RPM_URL="${PROTONVPN_RELEASE_RPM_URL:-https://repo.protonvpn.com/fedora-44-stable/protonvpn-stable-release/protonvpn-stable-release-${PROTONVPN_RELEASE_VERSION}-1.noarch.rpm}"
 PROTONVPN_RELEASE_RPM_SHA256="${PROTONVPN_RELEASE_RPM_SHA256:-c3a4ca5943b142997597c1e1248226cfafbabe914c89895e0a8b2890e422657c}"
@@ -145,10 +143,13 @@ echo "${SLACK_RPM_SHA256}  ${SLACK_RPM}" | sha256sum --check --status
 dnf5 -y install "${SLACK_RPM}"
 rm -f "${SLACK_RPM}"
 
-curl -fsSL --retry 3 --retry-delay 2 --output "${NORDVPN_RPM}" "${NORDVPN_RPM_URL}"
-echo "${NORDVPN_RPM_SHA256}  ${NORDVPN_RPM}" | sha256sum --check --status
-dnf5 -y install "${NORDVPN_RPM}"
-rm -f "${NORDVPN_RPM}"
+rpm --import "${NORDVPN_GPG_KEY_URL}"
+dnf5 config-manager addrepo \
+  --id=nordvpn \
+  --set="baseurl=${NORDVPN_REPO_URL}" \
+  --set=enabled=1 \
+  --overwrite
+dnf5 -y --no-gpgchecks install nordvpn
 
 curl -fsSL --retry 3 --retry-delay 2 --output "${PROTONVPN_RELEASE_RPM}" "${PROTONVPN_RELEASE_RPM_URL}"
 echo "${PROTONVPN_RELEASE_RPM_SHA256}  ${PROTONVPN_RELEASE_RPM}" | sha256sum --check --status

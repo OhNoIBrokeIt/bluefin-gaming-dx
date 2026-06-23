@@ -28,6 +28,8 @@ Slack should be native because the Flathub Slack wrapper is unverified and expli
 
 VPN clients should be native because routing, DNS, kill switches, split tunneling, NetworkManager integration, and daemon/service behavior are host-level concerns. The image installs both NordVPN and Proton VPN natively.
 
+NordVPN is installed from NordVPN's official yum repository rather than a pinned direct RPM. Scheduled image builds should pick up current NordVPN packages automatically from that repository.
+
 ## Razer/OpenRazer
 
 The Flatpak Razer frontends, such as Polychromatic or RazerGenie, still require native OpenRazer support to control devices reliably.
