@@ -27,7 +27,7 @@ This variant:
 - preserves Bluefin DX developer tooling
 - preserves NVIDIA Open compatibility from Bluefin
 - preserves HDR support provided by the base image stack
-- installs native Steam, Gamescope, Gamemode, MangoHud, Vulkan tools, Protontricks, Winetricks, Wine runtime packages, and Steam/Proton multilib dependencies
+- installs native Steam, Ghostty, Gamescope, Gamemode, MangoHud, Vulkan tools, Protontricks, Winetricks, Wine runtime packages, Kitty, NordVPN, Proton VPN, Slack, WinBoat, and Steam/Proton multilib dependencies
 - removes the Visual Studio Code RPM package `code`
 
 ### bluefin-gaming-hypr-dx
@@ -67,10 +67,16 @@ Noctalia Shell is resolved from the Terra Fedora repository. The Hyprland image 
 The base gaming image installs:
 
 - Native Steam RPM package
+- Ghostty terminal
 - Gamescope
 - Gamemode
 - MangoHud
 - Vulkan tools
+- Kitty terminal
+- NordVPN official RPM
+- Proton VPN official Fedora GNOME package
+- Slack official RPM
+- WinBoat with Podman Compose and FreeRDP runtime support
 - Protontricks and Winetricks
 - Wine runtime packages commonly needed by Steam/Proton
 - Steam runtime support packages
@@ -260,8 +266,63 @@ The Fedora 44 package names used by the GNOME image are intentionally plain RPM 
 
 - `gamemode` is the Fedora package. There is no Fedora 44 package named `game-performance` in the standard Fedora repositories used for this image.
 - `steam` is installed as a native RPM package from the enabled gaming/RPM Fusion-style repositories available in Universal Blue images.
+- `ghostty` is resolved from the `alternateved/ghostty` COPR because Fedora 44 does not currently provide it in the standard repositories used by this image.
 - `protontricks` and `winetricks` are available as Fedora 44 package names.
 - `mangohud.i686` and `gamemode.i686` are included for 32-bit game/runtime coverage.
+- `ghostty`, `kitty`, `freerdp`, `podman`, and `podman-compose` are Fedora package names used to support terminal workflows and WinBoat's Podman backend.
+- `gnome-shell-extension-appindicator` and `gnome-extensions-app` are included so Slack and Proton VPN can use GNOME tray/AppIndicator support.
+
+WinBoat is not installed from Fedora repositories. The GNOME image downloads the upstream Fedora RPM release asset from:
+
+```text
+https://github.com/TibixDev/winboat/releases/download/v0.9.0/winboat-0.9.0-x86_64.rpm
+```
+
+The build pins that asset with this SHA-256 digest:
+
+```text
+64338d6d61faf761a441fc59d3129aa346ce65905e12af329a08dff40308f5f7
+```
+
+WinBoat remains beta software and requires KVM-enabled hardware. The image provides the application, Podman Compose, and FreeRDP 3.x; user-specific Windows setup still happens after first launch.
+
+Slack is installed from Slack's official Linux RPM download rather than the unverified Flathub wrapper:
+
+```text
+https://downloads.slack-edge.com/desktop-releases/linux/x64/4.50.136/slack-4.50.136-0.1.el8.x86_64.rpm
+```
+
+The build pins that asset with this SHA-256 digest:
+
+```text
+efe415e8f2bddf526044dfb0edad8b06bb4053cd8cd42951e2893cfafc818ad2
+```
+
+NordVPN is installed from NordVPN's official RPM repository asset:
+
+```text
+https://repo.nordvpn.com/yum/nordvpn/centos/x86_64/Packages/n/nordvpn-5.1.0-1.x86_64.rpm
+```
+
+The build pins that asset with this SHA-256 digest:
+
+```text
+a0e8c7534f6b15968c15b2d6aa4a8541f8fcb0c7ee9e40691841525c6ab8933e
+```
+
+Proton VPN is installed from Proton's official Fedora 44 stable repository. The repository package is:
+
+```text
+https://repo.protonvpn.com/fedora-44-stable/protonvpn-stable-release/protonvpn-stable-release-1.0.4-1.noarch.rpm
+```
+
+The build pins that repository package with this SHA-256 digest:
+
+```text
+c3a4ca5943b142997597c1e1248226cfafbabe914c89895e0a8b2890e422657c
+```
+
+Proton documents Fedora 44 GNOME as the currently supported Fedora target for its GUI app.
 
 The Hyprland image adds these Fedora/COPR package names:
 
@@ -323,7 +384,7 @@ nss
 
 This protects Steam and Proton from subtle breakage caused by mismatched 64-bit and 32-bit graphics/security runtime packages.
 
-`build_files/build.sh` first performs a targeted upgrade of the x86_64 Mesa, NSS, and PipeWire packages that commonly collide with newer i686 packages. This lets DNF align the base image's installed x86_64 packages when the Bluefin stable image is slightly behind the Fedora 44 repository metadata, avoiding RPM file conflicts during composition.
+`build_files/build.sh` first performs a targeted upgrade of the x86_64 Mesa, NSS, and PipeWire packages that commonly collide with newer i686 packages. This lets DNF align the base image's installed x86_64 packages when the Bluefin stable image is slightly behind the Fedora 44 repository metadata, avoiding RPM file conflicts during composition. The same script verifies that Ghostty, Kitty, NordVPN, Proton VPN, Slack, WinBoat, Podman Compose, and FreeRDP entrypoints are present after installation.
 
 The build scripts also verify that the `code` RPM is absent. If VS Code remains installed for any reason, the build fails.
 
